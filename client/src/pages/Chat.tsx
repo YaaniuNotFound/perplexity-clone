@@ -28,37 +28,32 @@ export default function Chat() {
   }, [conversationData?.messages]);
 
   const handleSubmit = async () => {
-    if (!query.trim()) return;
+    if (!query.trim() || isLoading) return;
 
     const userQuery = query;
     setQuery("");
     setIsLoading(true);
 
     try {
+      let currentConversationId = conversationId;
+      
       // Create conversation if it doesn't exist
-      if (!conversationId) {
+      if (!currentConversationId) {
         const newConversation = await createConversationMutation.mutateAsync({
           title: userQuery.slice(0, 50),
         });
-        setConversationId(newConversation.id);
-        
-        // Send message to new conversation
-        await sendMessageMutation.mutateAsync({
-          conversationId: newConversation.id,
-          content: userQuery,
-        });
-        
-        // Refetch will happen automatically after conversationId is set
-      } else {
-        // Send message to existing conversation
-        await sendMessageMutation.mutateAsync({
-          conversationId,
-          content: userQuery,
-        });
-        
-        // Refetch conversation to get new messages
-        await refetch();
+        currentConversationId = newConversation.id;
+        setConversationId(currentConversationId);
       }
+      
+      // Send message
+      await sendMessageMutation.mutateAsync({
+        conversationId: currentConversationId,
+        content: userQuery,
+      });
+      
+      // Refetch conversation to get new messages
+      await refetch();
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
