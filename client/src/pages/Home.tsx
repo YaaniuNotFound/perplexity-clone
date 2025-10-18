@@ -52,13 +52,13 @@ export default function Home() {
               </div>
 
               {/* Action Bar */}
-              <div className="flex items-center justify-between px-4 pb-4 gap-2">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between px-4 pb-4 gap-1 sm:gap-2">
+                <div className="flex items-center gap-1">
                   {/* Search Button */}
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`gap-2 rounded-full ${
+                    className={`gap-1 sm:gap-2 rounded-full px-2 sm:px-3 ${
                       isSearchOpen 
                         ? "bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400" 
                         : "text-slate-600 dark:text-slate-400"
