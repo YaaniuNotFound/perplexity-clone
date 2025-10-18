@@ -1,10 +1,35 @@
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Globe, Cpu, Paperclip, RotateCcw, ArrowRight, Menu } from "lucide-react";
+import { useLocation } from "wouter";
+import { getLoginUrl } from "@/const";
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
   const [query, setQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const handleSubmit = () => {
+    if (!query.trim()) return;
+    
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      window.location.href = getLoginUrl();
+      return;
+    }
+    
+    // Navigate to chat page
+    setLocation("/chat");
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
@@ -45,6 +70,7 @@ export default function Home() {
                 <textarea
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
                   placeholder="Ask anything..."
                   className="w-full bg-transparent text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 resize-none outline-none text-base min-h-[60px]"
                   rows={2}
@@ -119,7 +145,8 @@ export default function Home() {
                 {/* Submit Button */}
                 <Button
                   size="icon"
-                  className="h-10 w-10 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-400"
+                  onClick={handleSubmit}
+                  className="h-10 w-10 rounded-full bg-teal-600 hover:bg-teal-700 text-white"
                   disabled={!query.trim()}
                 >
                   <ArrowRight className="h-5 w-5" />
